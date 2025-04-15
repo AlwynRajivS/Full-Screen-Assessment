@@ -1,28 +1,62 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Full-Screen Assessment</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; font-family: Arial, sans-serif; }
-        #startScreen, #examContent { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
-        #examContent { display: none; width: 100vw; height: 100vh; overflow: hidden; position: relative; }
-        #submitExam { position: fixed; top: 20px; left: 20px; background: #d9534f; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
-        #submitExam:hover { background: #c9302c; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        #startScreen, #examContent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        #examContent {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        #submitExam {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #d9534f;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #submitExam:hover {
+            background: #c9302c;
+        }
     </style>
     <script>
         let assessmentStarted = false;
+        let initialWidth, initialHeight;
 
         function openFullscreen() {
             let elem = document.documentElement;
             if (elem.requestFullscreen) {
                 elem.requestFullscreen();
-            } else if (elem.mozRequestFullScreen) { 
+            } else if (elem.mozRequestFullScreen) {
                 elem.mozRequestFullScreen();
-            } else if (elem.webkitRequestFullscreen) { 
+            } else if (elem.webkitRequestFullscreen) {
                 elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { 
+            } else if (elem.msRequestFullscreen) {
                 elem.msRequestFullscreen();
             }
 
@@ -30,8 +64,12 @@
             document.getElementById("examContent").style.display = "flex";
             assessmentStarted = true;
 
+            initialWidth = window.innerWidth;
+            initialHeight = window.innerHeight;
+
             setTimeout(() => {
                 enforceFullScreen();
+                monitorResize();
             }, 1000);
         }
 
@@ -44,14 +82,23 @@
             }, 1000);
         }
 
+        function monitorResize() {
+            setInterval(() => {
+                if (window.innerWidth !== initialWidth || window.innerHeight !== initialHeight) {
+                    alert("Screen resizing is not allowed! Your session is now terminated.");
+                    terminateSession();
+                }
+            }, 1000);
+        }
+
         function terminateSession() {
             sessionStorage.setItem("examExited", "true");
-            window.location.href = "https://kcetcoe.com/session-expired"; // Change to your exit page
+            window.location.href = "https://kcetcoe.com/session-expired"; // Change this as needed
         }
 
         function checkReEntry() {
             if (sessionStorage.getItem("examExited") === "true") {
-                window.location.href = "https://kcetcoe.com/session-expired";
+                window.location.href = "https://kcetcoe.com/session-expired"; // Change this as needed
             }
         }
 
@@ -60,11 +107,11 @@
             sessionStorage.setItem("examExited", "true");
             setTimeout(() => {
                 document.exitFullscreen();
-                window.location.href = "https://kcetcoe.com/assessment-completed";
+                window.location.href = "https://kcetcoe.com/assessment-completed"; // Change this as needed
             }, 1000);
         }
 
-        window.onload = function() {
+        window.onload = function () {
             checkReEntry();
         };
     </script>
@@ -79,9 +126,7 @@
     <!-- Exam Content (Hidden Initially) -->
     <div id="examContent">
         <iframe src="https://forms.office.com/r/NmrfY1FG2S" width="100%" height="90%" style="border: none;"></iframe>
-        <button id="submitExam" onclick="handleFormSubmit()">Submit Exam</button>
+        <button id="submitExam" onclick="handleFormSubmit()">Leave</button>
     </div>
 </body>
 </html>
-
-       
